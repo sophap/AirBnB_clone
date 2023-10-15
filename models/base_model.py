@@ -13,14 +13,11 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         '''initializes a basemodel object
-        Args:
-        *args - list of passed args
-        **kwargs - dictionary of args
-        '''
 
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        Args:
+            *args - list of passed args
+            **kwargs - dictionary of args
+        '''
 
         if kwargs is not None and kwargs != {}:
             for key, value in kwargs.items():
@@ -29,6 +26,11 @@ class BaseModel:
                         setattr(self, key, datetime.strptime(value, dateFmt))
                     else:
                         setattr(self, key, value)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+            storage.new(self)
 
     def __str__(self):
         '''representation of the object as a string'''
