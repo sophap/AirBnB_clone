@@ -8,8 +8,6 @@ from models import storage
 
 class BaseModel:
     '''creates a basemodel for other classes'''
-    const dateFmt = '%Y-%m-%dT%H:%M:%S.%f'
-    const strRepr = type(self).__name__, self.id, self.__dict__
 
     def __init__(self, *args, **kwargs):
         '''initializes a basemodel object
@@ -20,12 +18,15 @@ class BaseModel:
         '''
 
         if kwargs is not None and kwargs != {}:
-            for key, value in kwargs.items():
-                if key != '__class__':
-                    if key == 'created_at' or key == 'updated_at':
-                        setattr(self, key, datetime.strptime(value, dateFmt))
-                    else:
-                        setattr(self, key, value)
+            for k, val in kwargs.items():
+                if k == 'updated_at':
+                    self.__dict__["updated_at"] = datetime.strptime(
+                            val, '%Y-%m-%dT%H:%M:%S.%f')
+                elif k == 'created_at':
+                    self.__dict__["created_at"] = datetime.strptime(
+                            val, '%Y-%m-%dT%H:%M:%S.%f')
+                else:
+                    self.__dict__[k] = val
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -35,7 +36,8 @@ class BaseModel:
     def __str__(self):
         '''representation of the object as a string'''
 
-        return "[{}] ({}) {}".format(strRepr)
+        return "[{}] ({}) {}".format(
+                type(self).__name__, self.id, self.__dict__)
 
     def save(self):
         '''saves the object'''
