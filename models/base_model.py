@@ -3,7 +3,7 @@
 
 import uuid
 from datetime import datetime
-
+from models import storage
 
 class BaseModel:
     '''creates a basemodel for other classes'''
@@ -20,6 +20,7 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            storage.new(self)
         else:
             for k, val in kwargs.items():
                 if k != '__class__':
@@ -34,18 +35,16 @@ class BaseModel:
 
     def __str__(self):
         '''representation of the object as a string'''
-
         return "[{}] ({}) {}".format(
                 type(self).__name__, self.id, self.__dict__)
 
     def save(self):
         '''saves the object'''
-
         self.updated_at = datetime.now()
+        storage.save()
 
     def to_dict(self):
         '''shows all object attributes in dictionary format'''
-
         dictionary = self.__dict__.copy()
         dictionary['__class__'] = self.__class__.__name__
         dictionary['updated_at'] = dictionary['updated_at'].isoformat()
