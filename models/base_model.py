@@ -16,20 +16,21 @@ class BaseModel:
             **kwargs - dictionary of args
         '''
 
-        if kwargs is not None and kwargs != {}:
-            for k, val in kwargs.items():
-                if k == 'updated_at':
-                    self.__dict__["updated_at"] = datetime.strptime(
-                            val, '%Y-%m-%dT%H:%M:%S.%f')
-                elif k == 'created_at':
-                    self.__dict__["created_at"] = datetime.strptime(
-                            val, '%Y-%m-%dT%H:%M:%S.%f')
-                else:
-                    self.__dict__[k] = val
-        else:
+        if not kwargs:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+        else:
+            for k, val in kwargs.items():
+                if k != '__class__':
+                    if k == 'updated_at':
+                        self.__dict__["updated_at"] = datetime.strptime(
+                                val, '%Y-%m-%dT%H:%M:%S.%f')
+                    elif k == 'created_at':
+                        self.__dict__["created_at"] = datetime.strptime(
+                                val, '%Y-%m-%dT%H:%M:%S.%f')
+                    else:
+                        self.__dict__[k] = val
 
     def __str__(self):
         '''representation of the object as a string'''
@@ -46,7 +47,7 @@ class BaseModel:
         '''shows all object attributes in dictionary format'''
 
         dictionary = self.__dict__.copy()
-        dictionary['__class__'] = type(self).__name__
+        dictionary['__class__'] = self.__class__.__name__
         dictionary['updated_at'] = dictionary['updated_at'].isoformat()
         dictionary['created_at'] = dictionary['created_at'].isoformat()
         return dictionary
